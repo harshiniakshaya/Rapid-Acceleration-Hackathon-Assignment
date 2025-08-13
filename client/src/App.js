@@ -393,7 +393,7 @@ export default function App() {
                               </div>
                               <div className="bg-white rounded-lg px-3 py-1 font-semibold text-slate-700 shadow-sm">
                                 {route.leg1.source.time} - {route.leg1.destination.time}
-                              </div>
+                              </div> 
                             </div>
                           </div>
                           
