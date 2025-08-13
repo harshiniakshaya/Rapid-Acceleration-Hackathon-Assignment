@@ -59,9 +59,18 @@ async function findDirectTrains(source, destination) {
             const relevantStops = train.route.slice(sourceIndex, destIndex + 1);
             
             let distance = 0;
-            for(let i = 1; i < relevantStops.length; i++) {
-                distance += relevantStops[i].distanceFromPrevious;
-            }
+            const journeyStops = relevantStops.map((stop, index) => {
+                if (index > 0) {
+                    distance += stop.distanceFromPrevious;
+                }
+                return {
+                    stationName: stop.stationName,
+                    arrivalTime: stop.arrivalTime,
+                    departureTime: stop.departureTime,
+                    distanceFromPrevious: stop.distanceFromPrevious,
+                    sequence: stop.sequence
+                };
+            });
 
             results.push({
                 trainName: train.trainName,
@@ -70,6 +79,7 @@ async function findDirectTrains(source, destination) {
                 destination: { name: destination, time: relevantStops[relevantStops.length - 1].arrivalTime },
                 distance: distance,
                 price: distance * PRICE_PER_KM,
+                stops: journeyStops 
             });
         }
     }
@@ -78,8 +88,8 @@ async function findDirectTrains(source, destination) {
 
 async function findConnectingTrains(source, destination) {
     const connections = [];
-    const MIN_LAYOVER = 45;
-    const MAX_LAYOVER = 360;
+    const MIN_LAYOVER = 45; 
+    const MAX_LAYOVER = 360; 
 
     const trainsFromSource = await Train.find({ 'route.stationName': source }).lean();
 
@@ -97,27 +107,27 @@ async function findConnectingTrains(source, destination) {
             }).lean();
 
             for (const train2 of trainsFromInterchange) {
-                const interchangeStartOnTrain2 = train2.route.find(s => s.stationName === interchangeStationName);
-                const finalDestOnTrain2 = train2.route.find(s => s.stationName === destination);
+                 const interchangeStartOnTrain2 = train2.route.find(s => s.stationName === interchangeStationName);
+                 const finalDestOnTrain2 = train2.route.find(s => s.stationName === destination);
                 
-                if (!interchangeStartOnTrain2 || !finalDestOnTrain2 || interchangeStartOnTrain2.sequence >= finalDestOnTrain2.sequence) {
+                 if (!interchangeStartOnTrain2 || !finalDestOnTrain2 || interchangeStartOnTrain2.sequence >= finalDestOnTrain2.sequence) {
                     continue;
-                }
+                 }
 
-                const arrivalTime = timeToMinutes(interchangeStop.arrivalTime);
-                const departureTime = timeToMinutes(interchangeStartOnTrain2.departureTime);
-                const layover = departureTime - arrivalTime;
+                 const arrivalTime = timeToMinutes(interchangeStop.arrivalTime);
+                 const departureTime = timeToMinutes(interchangeStartOnTrain2.departureTime);
+                 const layover = departureTime - arrivalTime;
 
-                if (layover >= MIN_LAYOVER && layover <= MAX_LAYOVER) {
-                    const firstLegStops = train1.route.slice(sourceStopIndex, i + 1);
-                    let distance1 = 0;
-                    for(let k = 1; k < firstLegStops.length; k++) distance1 += firstLegStops[k].distanceFromPrevious;
+                 if (layover >= MIN_LAYOVER && layover <= MAX_LAYOVER) {
+                     const firstLegStops = train1.route.slice(sourceStopIndex, i + 1);
+                     let distance1 = 0;
+                     for(let k = 1; k < firstLegStops.length; k++) distance1 += firstLegStops[k].distanceFromPrevious;
                     
-                    const secondLegStops = train2.route.slice(interchangeStartOnTrain2.sequence - 1, finalDestOnTrain2.sequence);
-                    let distance2 = 0;
-                    for(let k = 1; k < secondLegStops.length; k++) distance2 += secondLegStops[k].distanceFromPrevious;
+                     const secondLegStops = train2.route.slice(interchangeStartOnTrain2.sequence - 1, finalDestOnTrain2.sequence);
+                     let distance2 = 0;
+                     for(let k = 1; k < secondLegStops.length; k++) distance2 += secondLegStops[k].distanceFromPrevious;
                     
-                    connections.push({
+                     connections.push({
                         totalPrice: (distance1 + distance2) * PRICE_PER_KM,
                         layoverDuration: layover,
                         interchangeStation: interchangeStationName,
@@ -133,12 +143,12 @@ async function findConnectingTrains(source, destination) {
                             destination: { name: destination, time: secondLegStops[secondLegStops.length - 1].arrivalTime },
                             price: distance2 * PRICE_PER_KM
                         }
-                    });
+                     });
 
-                    if (connections.length >= 10) {
+                     if (connections.length >= 10) {
                         return connections;
-                    }
-                }
+                     }
+                 }
             }
         }
     }
