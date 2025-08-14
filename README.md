@@ -72,12 +72,14 @@ node scripts/generatetData.js
 ## 🎬 Demo Video
 [https://www.youtube.com/watch?v=-i8nN0ZYKg8] - Live demonstration of all features
 
-## 👨‍💻 Author
-**Harshini Akshaya**  
-GitHub: [@harshiniakshaya](https://github.com/harshiniakshaya)
+## 👨‍💻 Authors
 
-**Gopinath**
-GitHub: [@Gopi04-github](https://github.com/Gopi04-github)
+**Harshini Akshaya**  
+GitHub: [@harshiniakshaya](https://github.com/harshiniakshaya)  
+
+**Gopinath**  
+GitHub: [@Gopi04-github](https://github.com/Gopi04-github)  
+
 
 ---
 
