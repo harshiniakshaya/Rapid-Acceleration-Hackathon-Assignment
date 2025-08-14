@@ -75,8 +75,9 @@ node scripts/generatetData.js
 ## 👨‍💻 Author
 **Harshini Akshaya**  
 GitHub: [@harshiniakshaya](https://github.com/harshiniakshaya)
+
 **Gopinath**
 GitHub: [@Gopi04-github](https://github.com/Gopi04-github)
 
 ---
-Built for Rapid Acceleration Hackathon Assignment
+
